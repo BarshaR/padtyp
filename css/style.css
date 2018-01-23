@@ -1,0 +1,31 @@
+body {
+	margin: 0;
+	font-family: 'Open Sans', sans-serif;
+}
+.page {
+	/*background: #323339;*/
+	background: #DFE2D2;
+	height: 800px;
+}
+
+.header {
+	height: 60px;
+	background: #323339;
+	display: inline-block;
+	width: 100%;
+	top: 0;
+	position: fixed;
+	text-align: center;
+}
+
+.header-title {
+	color: #6cbf84;
+	letter-spacing: 1px;
+	position: relative;
+	font-weight: 100;
+	margin: 0;
+	padding: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	display: inline-block;
+}
