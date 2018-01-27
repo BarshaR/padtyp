@@ -61,7 +61,7 @@ body {
 }
 
 .typing-passage-wrapper {
-
+	padding: 20px;
 	border-bottom: 1px solid rgb(57, 70, 78);
 }
 
@@ -81,4 +81,18 @@ body {
     border: none;
     outline: none;
     font-size: 20px;
+}
+
+#passage-text-area {
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    resize: none;
+    background: transparent;
+    color: #bfbfbf;
+    border: none;
+    outline: none;
+    font-size: 22px;
 }
