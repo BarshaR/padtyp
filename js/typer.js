@@ -2,12 +2,18 @@ window.onload = function (){
 
 	var passageTextarea = document.getElementById("passage-text-area");
 	var typingTextarea = document.getElementById("user-typing-text-area");
-	var testPassage = "This is some test text which you will be using to measure your typing skills. You are required to finish this as quickly as you can whilst minimising mistakes made.";
+	var testPassage = "This is some test text which you will be using to measure your typing skills. " + 
+		"You are required to finish this as quickly as you can whilst minimising mistakes made.";
+		testPassage += "You are required to finish this as quickly as you can whilst minimising mistakes made.";
+		
 	var styledTestPassage = "";
 	var typingPassageCharList = [];
 	var typingUserCharList = [];
 	var letterCounter = 0, totalWordCount = 0, correctWordCount = 0, incorrectWordCount = 0,
 		typedIndex = 0;
+
+	const FORWARD = 1;
+	const BACKWARD = -1;
 
 	// Create array of character objects from passage
 	function createCharacterList() {
@@ -20,9 +26,16 @@ window.onload = function (){
 
 	// Event listener for user typing textarea
 	typingTextarea.addEventListener('keypress', function (event) {
-		// var keyName = event.key;
-		// console.log('keypress event: ' + keyName);
 		checkLetter(event.key);
+	});
+
+	// Event listener for backspace when typing
+	typingTextarea.addEventListener('keydown', function (event) {
+		if (event.which === 8 && typedIndex > 0){
+			movePosIndicator(typedIndex, "backward");
+			typingPassageCharList[--typedIndex].letterHandle.style.color = "#bfbfbf";
+			// typedIndex--;
+		}
 	});
 
 	// Compare last typed letter with passage at current index
@@ -31,17 +44,26 @@ window.onload = function (){
 			typingPassageCharList[typedIndex].correct = true;
 			typingPassageCharList[typedIndex].letterHandle.style.color = "#6cbf84";
 			console.log("Correct letter");
-			typedIndex++;
+			movePosIndicator(typedIndex, "forward");
 		} else {
 			typingPassageCharList[typedIndex].correct = false;
 			console.log("Incorrect letter");
 			typingPassageCharList[typedIndex].letterHandle.style.color = "#fc4a1a";
-			typedIndex++;
+			movePosIndicator(typedIndex, "forward");
 		}
+
+		typedIndex++;
 	}
 
-	function highlightLetter() {
-
+	// Move the current position indicator
+	function movePosIndicator(currentIndex, direction) {
+		if (direction == "forward"){
+			typingPassageCharList[currentIndex].letterHandle.style.borderBottom = "none";
+			typingPassageCharList[++currentIndex].letterHandle.style.borderBottom = "1px solid white";
+		} else if (direction == "backward"){
+			typingPassageCharList[currentIndex].letterHandle.style.borderBottom = "none";
+			typingPassageCharList[--currentIndex].letterHandle.style.borderBottom = "1px solid white";
+		}
 	}
 
 	function getLetterElementList() {
@@ -54,6 +76,8 @@ window.onload = function (){
 	createCharacterList();
 	passageTextarea.innerHTML = styledTestPassage;
 	getLetterElementList();
+	// Initialise typing cursor on first character
+	typingPassageCharList[typedIndex].letterHandle.style.borderBottom = "1px solid white";
 	console.log(typingPassageCharList);
 };
 
