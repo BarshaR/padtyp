@@ -1,83 +1,83 @@
-window.onload = function (){
+/* global window document */
+window.onload = () => {
+    const passageTextarea = document.getElementById('passage-text-area');
+    const typingTextarea = document.getElementById('user-typing-text-area');
+    const testPassage = 'This is some test text which you will be using to measure your typing skills. ' +
+        'You are required to finish this as quickly as you can whilst minimising mistakes made.';
 
-	var passageTextarea = document.getElementById("passage-text-area");
-	var typingTextarea = document.getElementById("user-typing-text-area");
-	var testPassage = "This is some test text which you will be using to measure your typing skills. " + 
-		"You are required to finish this as quickly as you can whilst minimising mistakes made.";
-		testPassage += "You are required to finish this as quickly as you can whilst minimising mistakes made.";
-		
-	var styledTestPassage = "";
-	var typingPassageCharList = [];
-	var typingUserCharList = [];
-	var letterCounter = 0, totalWordCount = 0, correctWordCount = 0, incorrectWordCount = 0,
-		typedIndex = 0;
+    let styledTestPassage = '';
+    let typingPassageCharList = [];
+    let typedIndex = 0;
+    // fe
+    const FORWARD = 1;
+    const BACKWARD = -1;
 
-	const FORWARD = 1;
-	const BACKWARD = -1;
+    // Create array of character objects from passage
+    function createCharacterList() {
+        for (let i = 0; i < testPassage.length; i += 1) {
+            typingPassageCharList[i] = { char: testPassage[i] };
+            // Each letter inside an element for individual styling
+            styledTestPassage += '<span id="char-' + i + '">' + testPassage[i] + '</span>';
+        }
+    }
 
-	// Create array of character objects from passage
-	function createCharacterList() {
-		for (var i = 0; i < testPassage.length; i++){
-			typingPassageCharList[i] = {char: testPassage[i]};
-			// Each letter inside an element for individual styling
-			styledTestPassage += "<span id='char-" + i + "'>" + testPassage[i] + "</span>";
-		}
-	}
+    // Move the current position indicator
+    function movePosIndicator(currentIndex, direction) {
+        let index = currentIndex;
+        if (direction === 1) {
+            typingPassageCharList[index].letterHandle.style.borderBottom = 'none';
+            index += 1;
+            typingPassageCharList[index].letterHandle.style.borderBottom = '1px solid white';
+        } else if (direction === -1) {
+            typingPassageCharList[index].letterHandle.style.borderBottom = 'none';
+            index -= 1;
+            typingPassageCharList[index].letterHandle.style.borderBottom = '1px solid white';
+        }
+    }
 
-	// Event listener for user typing textarea
-	typingTextarea.addEventListener('keypress', function (event) {
-		checkLetter(event.key);
-	});
+    // Compare last typed letter with passage at current index
+    function checkLetter(typedChar) {
+        if (typedChar === typingPassageCharList[typedIndex].char) {
+            typingPassageCharList[typedIndex].correct = true;
+            typingPassageCharList[typedIndex].letterHandle.style.color = '#6cbf84';
+            console.log('Correct letter');
+            movePosIndicator(typedIndex, FORWARD);
+        } else {
+            typingPassageCharList[typedIndex].correct = false;
+            console.log('Incorrect letter');
+            typingPassageCharList[typedIndex].letterHandle.style.color = '#fc4a1a';
+            movePosIndicator(typedIndex, FORWARD);
+        }
 
-	// Event listener for backspace when typing
-	typingTextarea.addEventListener('keydown', function (event) {
-		if (event.which === 8 && typedIndex > 0){
-			movePosIndicator(typedIndex, "backward");
-			typingPassageCharList[--typedIndex].letterHandle.style.color = "#bfbfbf";
-			// typedIndex--;
-		}
-	});
+        typedIndex += 1;
+    }
 
-	// Compare last typed letter with passage at current index
-	function checkLetter(typedChar) {
-		if (typedChar === typingPassageCharList[typedIndex].char){
-			typingPassageCharList[typedIndex].correct = true;
-			typingPassageCharList[typedIndex].letterHandle.style.color = "#6cbf84";
-			console.log("Correct letter");
-			movePosIndicator(typedIndex, "forward");
-		} else {
-			typingPassageCharList[typedIndex].correct = false;
-			console.log("Incorrect letter");
-			typingPassageCharList[typedIndex].letterHandle.style.color = "#fc4a1a";
-			movePosIndicator(typedIndex, "forward");
-		}
+    function getLetterElementList() {
+        for (let i = 0; i < typingPassageCharList.length; i += 1) {
+            const currentElement = document.getElementById('char-' + i);
+            typingPassageCharList[i].letterHandle = currentElement;
+        }
+    }
 
-		typedIndex++;
-	}
+    // Event listener for user typing textarea
+    typingTextarea.addEventListener('keypress', (event) => {
+        checkLetter(event.key);
+    });
 
-	// Move the current position indicator
-	function movePosIndicator(currentIndex, direction) {
-		if (direction == "forward"){
-			typingPassageCharList[currentIndex].letterHandle.style.borderBottom = "none";
-			typingPassageCharList[++currentIndex].letterHandle.style.borderBottom = "1px solid white";
-		} else if (direction == "backward"){
-			typingPassageCharList[currentIndex].letterHandle.style.borderBottom = "none";
-			typingPassageCharList[--currentIndex].letterHandle.style.borderBottom = "1px solid white";
-		}
-	}
+    // Event listener for backspace when typing
+    typingTextarea.addEventListener('keydown', (event) => {
+        if (event.which === 8 && typedIndex > 0) {
+            movePosIndicator(typedIndex, BACKWARD);
+            typedIndex -= 1;
+            typingPassageCharList[typedIndex].letterHandle.style.color = '#bfbfbf';
+        }
+    });
 
-	function getLetterElementList() {
-		for (var i = 0; i < typingPassageCharList.length; i++){
-			var currentElement = document.getElementById("char-" + i);
-			typingPassageCharList[i].letterHandle = currentElement;
-		}
-	}
-
-	createCharacterList();
-	passageTextarea.innerHTML = styledTestPassage;
-	getLetterElementList();
-	// Initialise typing cursor on first character
-	typingPassageCharList[typedIndex].letterHandle.style.borderBottom = "1px solid white";
-	console.log(typingPassageCharList);
+    createCharacterList();
+    passageTextarea.innerHTML = styledTestPassage;
+    getLetterElementList();
+    // Initialise typing cursor on first character
+    typingPassageCharList[typedIndex].letterHandle.style.borderBottom = '1px solid white';
+    console.log(typingPassageCharList);
 };
 
