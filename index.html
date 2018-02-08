@@ -6,6 +6,8 @@
 	<link href="css/style.css" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 	<script type="text/javascript" src="js/typer.js"></script>
+	<script type="text/javascript" src="js/Clock.js"></script>
+
 </head>
 <body>
 	<div class="page">
@@ -22,6 +24,34 @@
 			<textarea placeholder="Click here to begin" id="user-typing-text-area"></textarea>
 		</div>
 		<div class="right-sidebar">
+			<div class="countdown-container">
+				<div>
+					<span class="perf-indicator-counter">
+						<span id="minutes"></span>
+						<span id="clock-colin"> : </span>
+						<span id="seconds"></span>
+					</span>
+					<span class="perf-indicator-unit">TIME LEFT</span>
+				</div>
+			</div>
+			<div class="wpm-container">
+					<div>
+						<span class="perf-indicator-counter">35</span>
+						<span class="perf-indicator-unit">WPM</span>
+					</div>
+				</div>
+			<div class="accuracy-percentage-container">
+				<div>
+					<span class="perf-indicator-counter">89%</span>
+					<span class="perf-indicator-unit">ACCURACY</span>
+				</div>
+			</div>
+			<div class="lpm-container">
+				<div>
+					<span class="perf-indicator-counter">89</span>
+					<span class="perf-indicator-unit">LPM</span>
+				</div>
+			</div>
 		</div>
 	</div>
 </body>

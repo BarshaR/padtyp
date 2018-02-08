@@ -53,6 +53,8 @@ body {
 	background: #202731;
 	border-left: 1px solid rgb(57, 70, 78);
 	grid-area: right-sidebar;
+	display: grid;
+	grid-template-rows: repeat(6, 1fr);
 }
 
 .typing-passage-wrapper {
@@ -95,4 +97,50 @@ body {
     border: none;
     outline: none;
     font-size: 22px;
+}
+
+.right-sidebar > div {
+	/* border-bottom: 1px solid rgb(57, 70, 78); */
+	padding: 20px;
+	
+}
+
+.right-sidebar > div .perf-indicator-counter {
+	font-size: 45px;
+	line-height: 45px;
+}
+
+.right-sidebar > div .perf-indicator-unit {
+	font-size: 14px;
+	margin-top: 5px;
+}
+
+.right-sidebar > div span {
+	color: #bfbfbf;
+	display: block;
+	text-align: center;
+}
+
+.wpm-container {
+
+}
+
+.wpm-container span {
+	color: #bfbfbf;
+	display: block;
+	text-align: center;
+}
+
+.countdown-container {
+
+}
+.countdown-container #minutes, .countdown-container #seconds,
+.countdown-container #clock-colin {
+	display: inline;
+}
+
+.accuracy-percentage-container {
+}
+
+.lpm-container {
 }
