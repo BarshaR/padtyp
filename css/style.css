@@ -47,6 +47,8 @@ body {
 	background: #202731;
 	border-right: 1px solid rgb(57, 70, 78);
 	grid-area: left-sidebar;
+	display: grid;
+	grid-template-rows: repeat(6, 1fr);
 }
 
 .right-sidebar {
@@ -99,7 +101,7 @@ body {
     font-size: 22px;
 }
 
-.right-sidebar > div {
+.right-sidebar > div , .left-sidebar > div {
 	/* border-bottom: 1px solid rgb(57, 70, 78); */
 	padding: 20px;
 	
@@ -121,26 +123,80 @@ body {
 	text-align: center;
 }
 
-.wpm-container {
-
-}
-
 .wpm-container span {
 	color: #bfbfbf;
 	display: block;
 	text-align: center;
 }
 
-.countdown-container {
-
-}
 .countdown-container #minutes, .countdown-container #seconds,
 .countdown-container #clock-colin {
 	display: inline;
 }
 
-.accuracy-percentage-container {
+.passage-select-container {
+
 }
 
-.lpm-container {
+.time-select-container {
+
+}
+
+#test-duration-select, #test-passage-select {
+	width: 100%;
+    background: transparent;
+    font-size: 19px;
+    text-align: center;
+    border: 1px solid #9c9c9c;
+	color: #bfbfbf;
+	outline: none;
+	border-radius: 0;
+	-webkit-appearance: none;
+	padding: 5px 0 5px 10px;
+}
+
+.time-select-title, .passage-select-title {
+	font-size: 16px;
+    margin-bottom: 9px;
+    color: #bfbfbf;
+    display: block;
+	text-align: center;
+	
+}
+
+#test-duration-select:hover, .passage-select-title:hover {
+	cursor: pointer;
+	background: #384352;
+}
+
+.reset-test-container {
+	grid-row: 6 / 7;
+}
+
+.reset-test-container > div {
+	margin-top: 32px;
+}
+
+.reset-test-container button {
+	width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background: transparent;
+    color: #bfbfbf;
+	font-size: 18px;
+	border: 1px solid #9c9c9c;
+}
+
+.reset-test-container button:hover {
+	background: #384352;
+	cursor: pointer;
+}
+
+.reset-test-container button:active {
+	background: #2a323e;
+
+}
+
+.reset-test-container button:focus {
+	outline: none;
 }

@@ -6,6 +6,7 @@ function Clock(totalSeconds, minutesDisplay, secondsDisplay) {
     this.timerComplete = false;
     this.minDisplay = minutesDisplay;
     this.secDisplay = secondsDisplay;
+    this.intervalTimer = 0;
 
     this.tick = () => {
         if (this.secondsLeft > 0) {
@@ -18,14 +19,23 @@ function Clock(totalSeconds, minutesDisplay, secondsDisplay) {
         }
     };
 
+    // Stops the timer and returns the time elapsed
+    this.stopTimer = () => {
+        clearInterval(this.intervalTimer);
+        return this.getTimeElapsed();
+    };
+
+    // Returns the time elapsed in seconds
+    this.getTimeElapsed = () => this.totalSeconds - ((this.minutesLeft * 60) + this.secondsLeft);
+
     this.startTimer = () => {
-        const intervalTimer = setInterval(() => {
-            if (this.timerComplete === true) {
-                clearInterval(intervalTimer);
-            }
+        this.intervalTimer = setInterval(() => {
+            if (this.timerComplete === true) this.stopTimer();
+            // Advance the time
             this.tick();
-            this.minDisplay.innerHTML = this.minutesLeft;
-            this.secDisplay.innerHTML = this.secondsLeft;
+            // Update the HTML elements passed in
+            this.minDisplay.innerHTML = this.minutesLeft < 10 ? '0' + this.minutesLeft : this.minutesLeft;
+            this.secDisplay.innerHTML = this.secondsLeft < 10 ? '0' + this.secondsLeft : this.secondsLeft;
         }, 1000);
     };
 }

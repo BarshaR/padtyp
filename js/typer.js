@@ -4,13 +4,20 @@ window.onload = () => {
     const typingTextarea = document.getElementById('user-typing-text-area');
     const minutesDisplay = document.getElementById('minutes');
     const secondsDisplay = document.getElementById('seconds');
+    const passageSelect = document.getElementById('test-passage-select');
+    const timeSelect = document.getElementById('time-select-title');
     const testPassage = 'This is some test';
     const typingPassageCharList = [];
     const FORWARD = 1;
     const BACKWARD = -1;
     let styledTestPassage = '';
     let typedIndex = 0;
-    let passageFinished = false;
+    let finishedPassage = false;
+    let startedTest = false;
+    let finishedTest = false;
+    let grossWordsPerMin = 0;
+    let netWordsPerMin = 0;
+    let wpmDisplay = document.getElementById('wpm-display');
 
     // Create array of character objects from passage
     function createCharacterList() {
@@ -24,7 +31,7 @@ window.onload = () => {
     // Finalise test results
     function passageComplete() {
         alert('finalising test results');
-        passageFinished = true;
+        finishedPassage = true;
         typingTextarea.style.color = '#868686';
         setTimeout(() => {
             typingTextarea.disabled = true;
@@ -66,6 +73,12 @@ window.onload = () => {
             console.log('Incorrect letter');
             typingPassageCharList[typedIndex].letterHandle.style.color = '#fc4a1a';
         }
+        // Check if a word was completed
+        if (typingPassageCharList[typedIndex].char === ' ') {
+            grossWordsPerMin += 1;
+            wpmDisplay.innerHTML = grossWordsPerMin;
+            console.log(grossWordsPerMin);
+        }
         // Check if the typing passage is complete
         if (checkPassageEnd(typedIndex)) {
             return false;
@@ -82,24 +95,35 @@ window.onload = () => {
         }
     }
 
+    function startTest() {
+        // create a new clock, providing the number of seconds
+        // and handles to the seconds and minutes html elements
+        const clock = new Clock(20, minutesDisplay, secondsDisplay);
+        clock.startTimer();
+    }
+
     // Event listener for user typing textarea
     typingTextarea.addEventListener('keypress', (event) => {
+        if (!startedTest) {
+            startedTest = true;
+            startTest();
+        }
         checkLetter(event.key);
     });
 
     // Event listener for backspace when typing
     typingTextarea.addEventListener('keydown', (event) => {
-        if (event.which === 8 && typedIndex > 0 && !passageFinished) {
+        if (event.which === 8 && typedIndex > 0 && !finishedPassage) {
             movePosIndicator(typedIndex, BACKWARD);
             typedIndex -= 1;
             typingPassageCharList[typedIndex].letterHandle.style.color = '#bfbfbf';
         }
     });
 
-    // create a new clock, providing the number of seconds 
-    // and handles to the seconds and minutes html elements
-    const clock = new Clock(150, minutesDisplay, secondsDisplay);
-    clock.startTimer();
+    // // create a new clock, providing the number of seconds
+    // // and handles to the seconds and minutes html elements
+    // const clock = new Clock(150, minutesDisplay, secondsDisplay);
+    // clock.startTimer();
 
     createCharacterList();
     passageTextarea.innerHTML = styledTestPassage;

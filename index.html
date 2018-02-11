@@ -16,7 +16,38 @@
 				<h1 class="header-title">pad.typ</h1>
 			</div>
 		</div>
-		<div class="left-sidebar"></div>
+		<div class="left-sidebar">
+			<div class="passage-select-container">
+				<div>
+					<span class="passage-select-title">PASSAGE</span>
+					<select id="test-passage-select">
+						<option value="1">Passage 1</option>
+						<option value="2">Passage 2</option>
+						<option value="3">Passage 3</option>
+					</select>
+				</div>
+			</div>
+			<div class="time-select-container">
+				<div>
+					<span class="time-select-title">DURATION</span>
+					<select id="test-duration-select">
+						<option value="1">1 Minute</option>
+						<option value="2">2 Minutes</option>
+						<option value="3">3 Minutes</option>
+					</select>
+				</div>
+			</div>
+			<div class="view-highscores-container">
+				<div>
+					
+				</div>
+			</div>
+			<div class="reset-test-container">
+				<div>
+					<button>RESET</button>
+				</div>
+			</div>
+		</div>
 		<div class="typing-passage-wrapper">
 			<div id="passage-text-area"></div>
 		</div>
@@ -27,16 +58,16 @@
 			<div class="countdown-container">
 				<div>
 					<span class="perf-indicator-counter">
-						<span id="minutes"></span>
+						<span id="minutes">0</span>
 						<span id="clock-colin"> : </span>
-						<span id="seconds"></span>
+						<span id="seconds">00</span>
 					</span>
 					<span class="perf-indicator-unit">TIME LEFT</span>
 				</div>
 			</div>
 			<div class="wpm-container">
 					<div>
-						<span class="perf-indicator-counter">35</span>
+						<span id="wpm-display" class="perf-indicator-counter">0</span>
 						<span class="perf-indicator-unit">WPM</span>
 					</div>
 				</div>
@@ -46,10 +77,10 @@
 					<span class="perf-indicator-unit">ACCURACY</span>
 				</div>
 			</div>
-			<div class="lpm-container">
+			<div class="error-counter-container">
 				<div>
 					<span class="perf-indicator-counter">89</span>
-					<span class="perf-indicator-unit">LPM</span>
+					<span class="perf-indicator-unit">ERRORS</span>
 				</div>
 			</div>
 		</div>
