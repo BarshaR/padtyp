@@ -6,7 +6,7 @@ window.onload = () => {
     const secondsDisplay = document.getElementById('seconds');
     const passageSelect = document.getElementById('test-passage-select');
     const timeSelect = document.getElementById('time-select-title');
-    const testPassage = 'This is some test';
+    const testPassage = 'This is some test text which you will need to try and type as quickly as you can. The words perminute count is running so you will need to try and type this passage in under one minute or you will not be doing very well. Thanks';
     const typingPassageCharList = [];
     const FORWARD = 1;
     const BACKWARD = -1;
@@ -29,18 +29,33 @@ window.onload = () => {
     }
 
     // Finalise test results
-    function passageComplete() {
-        alert('finalising test results');
+    // Accept timeout to ensure event completion
+    function testComplete(timeout) {
+        console.log('test complete');
         finishedPassage = true;
         typingTextarea.style.color = '#868686';
-        setTimeout(() => {
+        if (timeout) {
+            setTimeout(() => {
+                typingTextarea.disabled = true;
+            }, timeout);
+        } else {
             typingTextarea.disabled = true;
-        }, 1000);
+        }
     }
+
+    // Calculate words per minute
+    function wpmCalc(secondsPassed) {
+        const totalTypedChars = typedIndex + 1;
+        wpmDisplay.innerHTML = Math.round((totalTypedChars / 5) / (secondsPassed / 60));
+    }
+
+    // Return the accuracy percentage
+    const accuracyCalc = (numErrors, numTyped) => (numErrors / numTyped) * 100;
 
     function checkPassageEnd(index) {
         if (typingPassageCharList.length === index + 1) {
-            passageComplete();
+            // Complete the passage with a timeout of 1 second
+            testComplete(1000);
             return true;
         }
         return false;
@@ -50,11 +65,11 @@ window.onload = () => {
     function movePosIndicator(currentIndex, direction) {
         let index = currentIndex;
 
-        if (direction === 1) {
+        if (direction === FORWARD) {
             typingPassageCharList[index].letterHandle.style.borderBottom = 'none';
             index += 1;
             typingPassageCharList[index].letterHandle.style.borderBottom = '1px solid white';
-        } else if (direction === -1) {
+        } else if (direction === BACKWARD) {
             typingPassageCharList[index].letterHandle.style.borderBottom = 'none';
             index -= 1;
             typingPassageCharList[index].letterHandle.style.borderBottom = '1px solid white';
@@ -67,17 +82,9 @@ window.onload = () => {
         if (typedChar === typingPassageCharList[typedIndex].char) {
             typingPassageCharList[typedIndex].correct = true;
             typingPassageCharList[typedIndex].letterHandle.style.color = '#6cbf84';
-            console.log('Correct letter');
         } else {
             typingPassageCharList[typedIndex].correct = false;
-            console.log('Incorrect letter');
             typingPassageCharList[typedIndex].letterHandle.style.color = '#fc4a1a';
-        }
-        // Check if a word was completed
-        if (typingPassageCharList[typedIndex].char === ' ') {
-            grossWordsPerMin += 1;
-            wpmDisplay.innerHTML = grossWordsPerMin;
-            console.log(grossWordsPerMin);
         }
         // Check if the typing passage is complete
         if (checkPassageEnd(typedIndex)) {
@@ -96,11 +103,13 @@ window.onload = () => {
     }
 
     function startTest() {
-        // create a new clock, providing the number of seconds
+        // Create a new clock, providing the number of seconds
         // and handles to the seconds and minutes html elements
-        const clock = new Clock(20, minutesDisplay, secondsDisplay);
-        clock.startTimer();
+        const clock = new Clock(60, minutesDisplay, secondsDisplay);
+        // Begin the timer, providing a callback for completion
+        clock.startTimer(testComplete, wpmCalc);
     }
+
 
     // Event listener for user typing textarea
     typingTextarea.addEventListener('keypress', (event) => {
@@ -120,8 +129,8 @@ window.onload = () => {
         }
     });
 
-    // // create a new clock, providing the number of seconds
-    // // and handles to the seconds and minutes html elements
+    // create a new clock, providing the number of seconds
+    // and handles to the seconds and minutes html elements
     // const clock = new Clock(150, minutesDisplay, secondsDisplay);
     // clock.startTimer();
 
