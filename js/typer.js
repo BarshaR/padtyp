@@ -1,12 +1,17 @@
 /* global window document Clock */
 window.onload = () => {
+    // Get all DOM handles
     const passageTextarea = document.getElementById('passage-text-area');
     const typingTextarea = document.getElementById('user-typing-text-area');
     const minutesDisplay = document.getElementById('minutes');
     const secondsDisplay = document.getElementById('seconds');
     const passageSelect = document.getElementById('test-passage-select');
     const timeSelect = document.getElementById('time-select-title');
-    const testPassage = 'This is some test text which you will need to try and type as quickly as you can. The words perminute count is running so you will need to try and type this passage in under one minute or you will not be doing very well. Thanks';
+    const accuracyDisplay = document.getElementById('accuracy-percentage');
+    const errorCountDisplay = document.getElementById('error-count');
+    const wpmDisplay = document.getElementById('wpm-display');
+    let testPassage = 'This is some test text which The system of annual inspection by private agencies was soon found to be unsatisfactory since the interested firms/manufacturers were not found to give a wholly correct and impartial picture of the condition of water works plants. On the termination of the First World War, another installment of reforms was conferred in';
+
     const typingPassageCharList = [];
     const FORWARD = 1;
     const BACKWARD = -1;
@@ -16,8 +21,8 @@ window.onload = () => {
     let startedTest = false;
     let finishedTest = false;
     let grossWordsPerMin = 0;
+    let errorCount = 0;
     let netWordsPerMin = 0;
-    let wpmDisplay = document.getElementById('wpm-display');
 
     // Create array of character objects from passage
     function createCharacterList() {
@@ -33,6 +38,7 @@ window.onload = () => {
     function testComplete(timeout) {
         console.log('test complete');
         finishedPassage = true;
+        finishedTest = true;
         typingTextarea.style.color = '#868686';
         if (timeout) {
             setTimeout(() => {
@@ -46,11 +52,29 @@ window.onload = () => {
     // Calculate words per minute
     function wpmCalc(secondsPassed) {
         const totalTypedChars = typedIndex + 1;
-        wpmDisplay.innerHTML = Math.round((totalTypedChars / 5) / (secondsPassed / 60));
+        grossWordsPerMin = Math.round((totalTypedChars / 5) / (secondsPassed / 60));
+        wpmDisplay.innerHTML = grossWordsPerMin;
     }
 
     // Return the accuracy percentage
-    const accuracyCalc = (numErrors, numTyped) => (numErrors / numTyped) * 100;
+    const accuracyCalc = (numErrors, numTyped) => {
+        accuracyDisplay.innerHTML = Math.round(100 - ((numErrors / numTyped) * 100)) + '%';
+    };
+
+    // Update the error count
+    const countErrors = () => {
+        // TODO
+    };
+
+    // Redraw the accuracy and percentage counters
+    const updateErrorDisplays = () => {
+        // Update the error count to match passage
+        countErrors();
+        // Update the accuracy counter
+        accuracyCalc(errorCount, typedIndex + 1);
+        // Update the error counter
+        errorCountDisplay.innerHTML = errorCount;
+    };
 
     function checkPassageEnd(index) {
         if (typingPassageCharList.length === index + 1) {
@@ -84,8 +108,11 @@ window.onload = () => {
             typingPassageCharList[typedIndex].letterHandle.style.color = '#6cbf84';
         } else {
             typingPassageCharList[typedIndex].correct = false;
+            errorCount += 1;
             typingPassageCharList[typedIndex].letterHandle.style.color = '#fc4a1a';
         }
+        // Update the accuracy percentage and error counters
+        updateErrorDisplays();
         // Check if the typing passage is complete
         if (checkPassageEnd(typedIndex)) {
             return false;
@@ -103,10 +130,18 @@ window.onload = () => {
     }
 
     function startTest() {
+        // TODO
+        // Disable UI elements (selectors for passage and time)
+        // Pull values from passage and time selectors and begin the clock.\
+        // When a passage is changed, automatically replace it in the text area
+        // Will need to run all of the passage manipulation again.
+        // Make this into a function
+
         // Create a new clock, providing the number of seconds
         // and handles to the seconds and minutes html elements
         const clock = new Clock(60, minutesDisplay, secondsDisplay);
         // Begin the timer, providing a callback for completion
+        // and the words per minute calculation
         clock.startTimer(testComplete, wpmCalc);
     }
 
@@ -126,13 +161,11 @@ window.onload = () => {
             movePosIndicator(typedIndex, BACKWARD);
             typedIndex -= 1;
             typingPassageCharList[typedIndex].letterHandle.style.color = '#bfbfbf';
+            // Reverse error and update displays
+            errorCount -= 1;
+            updateErrorDisplays();
         }
     });
-
-    // create a new clock, providing the number of seconds
-    // and handles to the seconds and minutes html elements
-    // const clock = new Clock(150, minutesDisplay, secondsDisplay);
-    // clock.startTimer();
 
     createCharacterList();
     passageTextarea.innerHTML = styledTestPassage;
