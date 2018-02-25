@@ -164,7 +164,7 @@ body {
 	
 }
 
-#test-duration-select:hover, .passage-select-title:hover {
+#test-duration-select:hover, #test-passage-select:hover {
 	cursor: pointer;
 	background: #384352;
 }

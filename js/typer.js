@@ -1,4 +1,4 @@
-/* global window document Clock */
+/* global window document Clock passageList */
 window.onload = () => {
     // Get all DOM handles
     const passageTextarea = document.getElementById('passage-text-area');
@@ -6,17 +6,17 @@ window.onload = () => {
     const minutesDisplay = document.getElementById('minutes');
     const secondsDisplay = document.getElementById('seconds');
     const passageSelect = document.getElementById('test-passage-select');
-    const timeSelect = document.getElementById('time-select-title');
+    const timeSelect = document.getElementById('test-duration-select');
     const accuracyDisplay = document.getElementById('accuracy-percentage');
     const errorCountDisplay = document.getElementById('error-count');
     const wpmDisplay = document.getElementById('wpm-display');
-    let testPassage = 'This is some test text which The system of annual inspection by private agencies was soon found to be unsatisfactory since the interested firms/manufacturers were not found to give a wholly correct and impartial picture of the condition of water works plants. On the termination of the First World War, another installment of reforms was conferred in';
+    let testPassageText = '';
 
     const typingPassageCharList = [];
     const FORWARD = 1;
     const BACKWARD = -1;
     let styledTestPassage = '';
-    let typedIndex = 0;
+    let nextCharIndex = 0;
     let finishedPassage = false;
     let startedTest = false;
     let finishedTest = false;
@@ -26,10 +26,11 @@ window.onload = () => {
 
     // Create array of character objects from passage
     function createCharacterList() {
-        for (let i = 0; i < testPassage.length; i += 1) {
-            typingPassageCharList[i] = { char: testPassage[i] };
+        styledTestPassage = '';
+        for (let i = 0; i < testPassageText.length; i += 1) {
+            typingPassageCharList[i] = { char: testPassageText[i] };
             // Each letter inside an element for individual styling
-            styledTestPassage += '<span id="char-' + i + '">' + testPassage[i] + '</span>';
+            styledTestPassage += '<span id="char-' + i + '">' + testPassageText[i] + '</span>';
         }
     }
 
@@ -51,7 +52,7 @@ window.onload = () => {
 
     // Calculate words per minute
     function wpmCalc(secondsPassed) {
-        const totalTypedChars = typedIndex + 1;
+        const totalTypedChars = nextCharIndex + 1;
         grossWordsPerMin = Math.round((totalTypedChars / 5) / (secondsPassed / 60));
         wpmDisplay.innerHTML = grossWordsPerMin;
     }
@@ -61,19 +62,17 @@ window.onload = () => {
         accuracyDisplay.innerHTML = Math.round(100 - ((numErrors / numTyped) * 100)) + '%';
     };
 
-    // Update the error count
-    const countErrors = () => {
-        // TODO
-    };
+    // Update the error count from the currently typed characters
+    const countErrors = () => typingPassageCharList.filter(char => char.isCorrect === false).length;
 
     // Redraw the accuracy and percentage counters
     const updateErrorDisplays = () => {
         // Update the error count to match passage
-        countErrors();
+        const numErrors = countErrors();
         // Update the accuracy counter
-        accuracyCalc(errorCount, typedIndex + 1);
+        accuracyCalc(numErrors, nextCharIndex + 1);
         // Update the error counter
-        errorCountDisplay.innerHTML = errorCount;
+        errorCountDisplay.innerHTML = numErrors;
     };
 
     function checkPassageEnd(index) {
@@ -86,8 +85,8 @@ window.onload = () => {
     }
 
     // Move the current position indicator
-    function movePosIndicator(currentIndex, direction) {
-        let index = currentIndex;
+    function movePosIndicator(direction) {
+        let index = nextCharIndex;
 
         if (direction === FORWARD) {
             typingPassageCharList[index].letterHandle.style.borderBottom = 'none';
@@ -103,22 +102,21 @@ window.onload = () => {
 
     // Compare last typed letter with passage at current index
     function checkLetter(typedChar) {
-        if (typedChar === typingPassageCharList[typedIndex].char) {
-            typingPassageCharList[typedIndex].correct = true;
-            typingPassageCharList[typedIndex].letterHandle.style.color = '#6cbf84';
+        if (typedChar === typingPassageCharList[nextCharIndex].char) {
+            typingPassageCharList[nextCharIndex].isCorrect = true;
+            typingPassageCharList[nextCharIndex].letterHandle.style.color = '#6cbf84';
         } else {
-            typingPassageCharList[typedIndex].correct = false;
-            errorCount += 1;
-            typingPassageCharList[typedIndex].letterHandle.style.color = '#fc4a1a';
+            typingPassageCharList[nextCharIndex].isCorrect = false;
+            typingPassageCharList[nextCharIndex].letterHandle.style.color = '#fc4a1a';
         }
         // Update the accuracy percentage and error counters
         updateErrorDisplays();
         // Check if the typing passage is complete
-        if (checkPassageEnd(typedIndex)) {
+        if (checkPassageEnd(nextCharIndex)) {
             return false;
         }
-        movePosIndicator(typedIndex, FORWARD);
-        typedIndex += 1;
+        movePosIndicator(FORWARD);
+        nextCharIndex += 1;
         return true;
     }
 
@@ -129,14 +127,51 @@ window.onload = () => {
         }
     }
 
+    // Populates the passages dropdown
+    function populatePassageList() {
+        passageList.passages.forEach((passage) => {
+            const option = document.createElement('option');
+            option.text = passage.title;
+            option.value = passage.id;
+            passageSelect.appendChild(option);
+        });
+    }
+
+    // Find a passage by ID
+    function getPassageById(id) {
+        let passageText = '';
+        passageList.passages.forEach((passage) => {
+            if (passage.id === id) passageText = passage.text;
+        });
+        return passageText;
+    }
+
+    // Select a passage
+    function selectPassage() {
+        testPassageText = getPassageById(passageSelect.options[passageSelect.selectedIndex].value);
+        if (testPassageText) {
+            createCharacterList();
+            passageTextarea.innerHTML = styledTestPassage;
+            getLetterElementList();
+            // Initialise typing cursor on first character
+            typingPassageCharList[nextCharIndex].letterHandle.style.borderBottom = '1px solid white';
+        } else {
+            alert('passage not found!!');
+        }
+    }
+
     function startTest() {
         // TODO
-        // Disable UI elements (selectors for passage and time)
+        // Disable passage and timer selection
+        passageSelect.disabled = true;
+        passageSelect.style.color = '#868686';
+        timeSelect.disabled = true;
+        timeSelect.style.color = '#868686';
+
         // Pull values from passage and time selectors and begin the clock.\
         // When a passage is changed, automatically replace it in the text area
         // Will need to run all of the passage manipulation again.
         // Make this into a function
-
         // Create a new clock, providing the number of seconds
         // and handles to the seconds and minutes html elements
         const clock = new Clock(60, minutesDisplay, secondsDisplay);
@@ -144,7 +179,6 @@ window.onload = () => {
         // and the words per minute calculation
         clock.startTimer(testComplete, wpmCalc);
     }
-
 
     // Event listener for user typing textarea
     typingTextarea.addEventListener('keypress', (event) => {
@@ -155,22 +189,28 @@ window.onload = () => {
         checkLetter(event.key);
     });
 
+    // Event listener for passage select dropdown
+    passageSelect.addEventListener('change', () => {
+        selectPassage();
+    });
+
     // Event listener for backspace when typing
     typingTextarea.addEventListener('keydown', (event) => {
-        if (event.which === 8 && typedIndex > 0 && !finishedPassage) {
-            movePosIndicator(typedIndex, BACKWARD);
-            typedIndex -= 1;
-            typingPassageCharList[typedIndex].letterHandle.style.color = '#bfbfbf';
+        if (event.which === 8 && nextCharIndex > 0 && !finishedPassage) {
+            movePosIndicator(BACKWARD);
+            nextCharIndex -= 1;
+            typingPassageCharList[nextCharIndex].letterHandle.style.color = '#bfbfbf';
+            delete typingPassageCharList[nextCharIndex].isCorrect;
             // Reverse error and update displays
-            errorCount -= 1;
+            updateErrorDisplays();
+        } else if (event.which === 8 && nextCharIndex === 0 && !finishedPassage) {
+            delete typingPassageCharList[nextCharIndex].isCorrect;
+            typingPassageCharList[nextCharIndex].letterHandle.style.color = '#bfbfbf';
             updateErrorDisplays();
         }
     });
 
-    createCharacterList();
-    passageTextarea.innerHTML = styledTestPassage;
-    getLetterElementList();
-    // Initialise typing cursor on first character
-    typingPassageCharList[typedIndex].letterHandle.style.borderBottom = '1px solid white';
+    // Populate the passage dropdown
+    populatePassageList();
 };
 
