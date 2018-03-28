@@ -21,7 +21,7 @@
 				<div>
 					<span class="passage-select-title">PASSAGE</span>
 					<select id="test-passage-select">
-						<option disabled selected>Choose a Passage</option>
+						<option value="default" disabled selected>Select Passage</option>
 					</select>
 				</div>
 			</div>
@@ -42,7 +42,7 @@
 			</div>
 			<div class="reset-test-container">
 				<div>
-					<button>RESET</button>
+					<button id="reset-btn">RESET</button>
 				</div>
 			</div>
 		</div>
@@ -50,7 +50,7 @@
 			<div id="passage-text-area"></div>
 		</div>
 		<div class="typing-text-wrapper">
-			<textarea placeholder="Click here to begin" id="user-typing-text-area"></textarea>
+			<textarea disabled placeholder="Select passage to begin" id="user-typing-text-area"></textarea>
 		</div>
 		<div class="right-sidebar">
 			<div class="countdown-container">

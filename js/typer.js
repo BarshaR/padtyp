@@ -11,7 +11,7 @@ window.onload = () => {
     const errorCountDisplay = document.getElementById('error-count');
     const wpmDisplay = document.getElementById('wpm-display');
     let testPassageText = '';
-
+    let testDuration = 0;
     const typingPassageCharList = [];
     const FORWARD = 1;
     const BACKWARD = -1;
@@ -21,7 +21,6 @@ window.onload = () => {
     let startedTest = false;
     let finishedTest = false;
     let grossWordsPerMin = 0;
-    let errorCount = 0;
     let netWordsPerMin = 0;
 
     // Create array of character objects from passage
@@ -37,7 +36,6 @@ window.onload = () => {
     // Finalise test results
     // Accept timeout to ensure event completion
     function testComplete(timeout) {
-        console.log('test complete');
         finishedPassage = true;
         finishedTest = true;
         typingTextarea.style.color = '#868686';
@@ -160,24 +158,34 @@ window.onload = () => {
         }
     }
 
+    // Return true if test can be started
+    function checkTestStart() {
+        if (passageSelect.value === 'default') {
+            return false;
+        }
+        return true;
+    }
+
     function startTest() {
-        // TODO
+        // Check if conditions are met before test start
+        if (!checkTestStart()) alert('Soz pls fill in the passage'); 
+
         // Disable passage and timer selection
         passageSelect.disabled = true;
         passageSelect.style.color = '#868686';
         timeSelect.disabled = true;
         timeSelect.style.color = '#868686';
 
-        // Pull values from passage and time selectors and begin the clock.\
-        // When a passage is changed, automatically replace it in the text area
-        // Will need to run all of the passage manipulation again.
-        // Make this into a function
-        // Create a new clock, providing the number of seconds
-        // and handles to the seconds and minutes html elements
-        const clock = new Clock(60, minutesDisplay, secondsDisplay);
+        // Pull values from passage and time selectors and begin the clock.
+        const clock = new Clock(timeSelect.value * 60, minutesDisplay, secondsDisplay);
         // Begin the timer, providing a callback for completion
         // and the words per minute calculation
         clock.startTimer(testComplete, wpmCalc);
+    }
+
+    function resetTest() {
+        finishedTest = false;
+        typingTextarea.value = '';
     }
 
     // Event listener for user typing textarea
@@ -189,8 +197,15 @@ window.onload = () => {
         checkLetter(event.key);
     });
 
+    // Event listener for the test duration dropdown
+    timeSelect.addEventListener('change', () => {
+        minutesDisplay.innerHTML = '0' + timeSelect.value;
+    });
+
     // Event listener for passage select dropdown
     passageSelect.addEventListener('change', () => {
+        typingTextarea.disabled = false;
+        typingTextarea.setAttribute('placeholder', 'Click here to begin test');
         selectPassage();
     });
 
